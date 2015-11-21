@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">InternetRadio</string>
+    <string name="app_name">Radio De Blauwe Tegel</string>
     <string name="play_txt">Play</string>
     <string name="pause_txt">Pause</string>
-    <string name="action_more_info">Informatie</string>
+    <string name="action_more_info">Meer informatie</string>
     <string name="not_now">Niet nu</string>
     <string name="visit_website">Ga naar de website</string>
     <string name="info_1">Radio De Blauwe Tegel: 24 uur per dag Nederlandstalige muziek!</string>

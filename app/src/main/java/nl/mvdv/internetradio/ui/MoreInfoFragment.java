@@ -1,4 +1,4 @@
-package nl.mvdv.internetradio;
+package nl.mvdv.internetradio.ui;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -9,6 +9,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
 import android.widget.Button;
+
+import nl.mvdv.internetradio.Constants;
+import nl.mvdv.internetradio.R;
 
 /**
  * Created by voorenmi on 18-11-2015.

@@ -21,21 +21,25 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Now playing"
         android:id="@+id/nowTextView"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="59dp"
         android:layout_below="@+id/titleTextView"
-        android:layout_alignLeft="@+id/play_button"
-        android:layout_alignStart="@+id/play_button" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="21dp"
+        android:layout_marginStart="21dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Next track"
         android:id="@+id/nextTextView"
         android:layout_marginTop="31dp"
         android:layout_below="@+id/nowTextView"
         android:layout_alignLeft="@+id/nowTextView"
-        android:layout_alignStart="@+id/nowTextView" />
+        android:layout_alignStart="@+id/nowTextView"
+        android:layout_alignRight="@+id/nowTextView"
+        android:layout_alignEnd="@+id/nowTextView" />
 
 </RelativeLayout>

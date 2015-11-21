@@ -1,4 +1,4 @@
-package nl.mvdv.internetradio;
+package nl.mvdv.internetradio.mediaplayer;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -13,6 +13,9 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import java.io.IOException;
+
+import nl.mvdv.internetradio.Constants;
+import nl.mvdv.internetradio.ui.MainActivity;
 
 import static nl.mvdv.internetradio.Util.toast;
 

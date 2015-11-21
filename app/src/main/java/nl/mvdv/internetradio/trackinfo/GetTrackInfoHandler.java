@@ -1,11 +1,9 @@
-package nl.mvdv.internetradio;
+package nl.mvdv.internetradio.trackinfo;
 
-import android.app.Service;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
+import android.os.Handler;
 import android.util.Log;
+import android.widget.TextView;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -13,32 +11,36 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
-public class TrackInfoService extends Service {
+import nl.mvdv.internetradio.Constants;
+import nl.mvdv.internetradio.Util;
+import nl.mvdv.internetradio.ui.MainActivity;
 
-    private static final String TAG = "TrackInfoService";
+/**
+ * Created by voorenmi on 20-11-2015.
+ */
+public class GetTrackInfoHandler implements Runnable {
 
+    private Handler handler;
+    private long delay;
+    private OnTrackInfoReceivedListener listener;
+
+    public GetTrackInfoHandler(OnTrackInfoReceivedListener listener, Handler handler, long delay) {
+        this.handler = handler;
+        this.delay = delay;
+        this.listener = listener;
+    }
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public void run() {
+        //reschedule
+        handler.postDelayed(this, delay);
         new GetTrackInfoTask().execute();
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    private void sendBroadcast(TrackInfo info){
-        Intent intent = new Intent(Constants.Actions.SEND_TRACK_INFO_ACTION);
-        intent.putExtra(Constants.Extras.TRACK_INFO, info);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     private class GetTrackInfoTask extends AsyncTask<Void, Void, TrackInfo> {
+
+        private static final String TAG = "GetTrackInfoTask";
 
         @Override
         protected TrackInfo doInBackground(Void... params) {
@@ -72,46 +74,46 @@ public class TrackInfoService extends Service {
             input.close();
             // <HTML><meta http-equiv="Pragma" content="no-cache"></head><body>0,1,7,100,0,128, Nu op Radio De Blauwe Tegel: Denans - Zoveel duizenden vrouwen Straks hoort u:  Mark Rijs - Doenja</body></html>
             String responseBody = builder.toString();
-            Log.i(TAG,"responseBody: " + responseBody);
+            Log.d(TAG,"responseBody: " + responseBody);
             int startIdx = responseBody.indexOf("<body>") + 6;
             int endIdx = responseBody.indexOf("</body>");
             String infoContent = responseBody.substring(startIdx, endIdx);
-            Log.i(TAG,"infoContent: " + infoContent);
+            Log.d(TAG, "infoContent: " + infoContent);
             String[] infoArray = infoContent.split(",");
             // join strings from offset 6, because that's a comma in the content
             StringBuilder nowAndNext = new StringBuilder();
             for (int i = 0; i < infoArray.length; i++) {
-                Log.i(TAG, "i: " + i + "= " + infoArray[i]);
+                Log.d(TAG, "i: " + i + "= " + infoArray[i]);
                 switch (i) {
                     case Constants.ShoutcastFields.CURRENT_LISTENERS:
-                        Log.i(TAG, "currentListeners");
+                        Log.d(TAG, "currentListeners");
                         result.setCurrentListeners(Integer.parseInt(infoArray[i]));
                         break;
                     case Constants.ShoutcastFields.STATUS:
                     case Constants.ShoutcastFields.LISTENER_PEAK:
                     case Constants.ShoutcastFields.REPORTED_LISTENERS:
-                        Log.i(TAG, "status,listenerPeak,reportedListeners");
+                        Log.d(TAG, "status,listenerPeak,reportedListeners");
                         break;
                     case Constants.ShoutcastFields.MAX_LISTENERS:
-                        Log.i(TAG, "maxListeners");
+                        Log.d(TAG, "maxListeners");
                         result.setMaxListeners(Integer.parseInt(infoArray[i]));
                         break;
                     case Constants.ShoutcastFields.BITRATE:
-                        Log.i(TAG, "bitRate");
+                        Log.d(TAG, "bitRate");
                         result.setBitRate(Integer.parseInt(infoArray[i]));
                         break;
                     case Constants.ShoutcastFields.TRACK_INFO:
-                        Log.i(TAG, "trackInfo");
+                        Log.d(TAG, "trackInfo");
                         nowAndNext.append(infoArray[i].trim());
                         break;
                     default:
-                        Log.i(TAG, "trackInfo(default)");
+                        Log.d(TAG, "trackInfo(default)");
                         nowAndNext.append(infoArray[i].trim());
 
                 }
             }
             String nowAndNextString = nowAndNext.toString();
-            Log.i(TAG,"nowAndNextString: " + nowAndNextString);
+            Log.d(TAG,"nowAndNextString: " + nowAndNextString);
             int startIdxNow = nowAndNextString.indexOf("Nu op Radio De Blauwe Tegel:") + 28;
             int endIdxNow = nowAndNextString.indexOf("Straks hoort u:");
             int startIdxNext = endIdxNow + 15;
@@ -124,8 +126,13 @@ public class TrackInfoService extends Service {
 
         @Override
         protected void onPostExecute(TrackInfo info) {
-            sendBroadcast(info);
             super.onPostExecute(info);
+            listener.onTrackInfoReceived(info);
         }
+    }
+
+    public static interface OnTrackInfoReceivedListener {
+
+        void onTrackInfoReceived(TrackInfo trackInfo);
     }
 }

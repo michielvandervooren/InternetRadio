@@ -1,4 +1,4 @@
-package nl.mvdv.internetradio;
+package nl.mvdv.internetradio.trackinfo;
 
 import android.os.Parcel;
 import android.os.Parcelable;

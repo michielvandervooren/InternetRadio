@@ -1,14 +1,10 @@
-package nl.mvdv.internetradio;
+package nl.mvdv.internetradio.ui;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.support.v4.content.LocalBroadcastManager;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,30 +12,35 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import nl.mvdv.internetradio.Constants;
+import nl.mvdv.internetradio.trackinfo.GetTrackInfoHandler;
+import nl.mvdv.internetradio.mediaplayer.MediaPlayerService;
+import nl.mvdv.internetradio.R;
+import nl.mvdv.internetradio.trackinfo.TrackInfo;
+import nl.mvdv.internetradio.Util;
+
+public class MainActivity extends AppCompatActivity implements GetTrackInfoHandler.OnTrackInfoReceivedListener {
 
     private static final String TAG = "MainActivity";
-    private BroadcastReceiver trackInfoReceiver;
-    private PendingIntent getTrackInfoIntent;
 
-    private Button playButton;
     private TextView nowPlayingView;
     private TextView nextTrackView;
+
+    private Handler handler;
+    private GetTrackInfoHandler getTrackInfoHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        playButton = (Button) findViewById(R.id.play_button);
+        Button playButton = (Button) findViewById(R.id.play_button);
         nowPlayingView = (TextView) findViewById(R.id.nowTextView);
         nextTrackView = (TextView) findViewById(R.id.nextTextView);
 
-        // create the TrackInfoReceiver
-        trackInfoReceiver = createTrackInfoReceiver();
-
-        // create the pendingIntent for the TrackInfoService
-        getTrackInfoIntent = createGetTrackInfoPendingIntent();
+        // create the handler
+        handler = new Handler();
+        getTrackInfoHandler = new GetTrackInfoHandler(this, handler, 30 * 1000);
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,15 +64,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        cancelAlarm();
-        unregisterTrackInfoReceiver();
+        cancelGetTrackInfo();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        registerAlarm();
-        registerTrackInfoReceiver();
+        scheduleGetTrackInfo();
     }
 
     @Override
@@ -98,55 +97,26 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void registerAlarm() {
-        getAlarmManager().setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.uptimeMillis(), 30 * 1000, getTrackInfoIntent);
+    @Override
+    public void onTrackInfoReceived(TrackInfo info) {
+        if (info == null) {
+            Util.toast(this, "Geen track informatie beschikbaar");
+        } else {
+            nowPlayingView.setText("Je luistert naar: " + info.getNowPlaying());
+            nextTrackView.setText("Hierna: " + info.getNext());
+        }
     }
 
-    private void cancelAlarm() {
-        getAlarmManager().cancel(getTrackInfoIntent);
+    private void scheduleGetTrackInfo() {
+        handler.post(getTrackInfoHandler);
     }
 
-    private BroadcastReceiver createTrackInfoReceiver() {
-        return new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                final TrackInfo info = intent.getParcelableExtra(Constants.Extras.TRACK_INFO);
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (info == null) {
-                            Util.toast(MainActivity.this, "Geen track informatie beschikbaar");
-                        } else {
-                            nowPlayingView.setText(info.getNowPlaying());
-                            nextTrackView.setText(info.getNext());
-                        }
-                    }
-                });
-
-            }
-        };
-    }
-
-    private void registerTrackInfoReceiver() {
-        LocalBroadcastManager.getInstance(this).registerReceiver(trackInfoReceiver, new IntentFilter(Constants.Actions.SEND_TRACK_INFO_ACTION));
-    }
-
-    private void unregisterTrackInfoReceiver() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(trackInfoReceiver);
+    private void cancelGetTrackInfo() {
+        handler.removeCallbacks(getTrackInfoHandler);
     }
 
     private void showMoreInfo() {
         MoreInfoFragment moreInfoFragment = new MoreInfoFragment();
         moreInfoFragment.show(getSupportFragmentManager(), null);
     }
-
-    private PendingIntent createGetTrackInfoPendingIntent() {
-        Intent serviceIntent = new Intent(this, TrackInfoService.class);
-        return PendingIntent.getService(this, 0, serviceIntent, 0);
-    }
-
-    private AlarmManager getAlarmManager() {
-        return (AlarmManager) getSystemService(ALARM_SERVICE);
-    }
-
 }
