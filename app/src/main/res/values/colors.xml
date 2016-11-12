@@ -3,4 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="redNLFlag">#AE1C28</color>
+    <color name="whiteNLFlag">#FFFFFF</color>
+    <color name="blueNLFlag">#21468B</color>
+    <color name="blueDBT">#0393F5</color>
+    <color name="greyDBT">#E5E5E5</color>
 </resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <item android:top="3dp" android:bottom="3dp" android:left="3dp" android:right="3dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/redNLFlag" />
+        </shape>
+    </item>
+
+    <item android:top="6dp" android:bottom="6dp" android:left="6dp" android:right="6dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/whiteNLFlag" />
+        </shape>
+    </item>
+
+    <item android:top="9dp" android:bottom="9dp" android:left="9dp" android:right="9dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/blueNLFlag" />
+        </shape>
+    </item>
+
+    <item android:top="12dp" android:bottom="12dp" android:left="12dp" android:right="12dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/blueDBT" />
+        </shape>
+    </item>
+</layer-list>
+

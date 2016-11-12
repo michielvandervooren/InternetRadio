@@ -1,10 +1,9 @@
 <resources>
     <string name="app_name">Radio De Blauwe Tegel</string>
-    <string name="play_txt">Play</string>
-    <string name="pause_txt">Pause</string>
-    <string name="action_more_info">Meer informatie</string>
-    <string name="not_now">Niet nu</string>
-    <string name="visit_website">Ga naar de website</string>
-    <string name="info_1">Radio De Blauwe Tegel: 24 uur per dag Nederlandstalige muziek!</string>
-    <string name="info_2">Bezoek ook eens onze website</string>
+    <string name="notification_text">Open de speler</string>
+    <string name="now_playing">Je luistert nu naar:</string>
+    <string name="next_track">Hierna:</string>
+    <string name="subtitle">24 uur per dag Nederlandstalige muziek!</string>
+    <string name="err_mediaplayer">Audiospeler kan niet gestart worden</string>
+    <string name="visit_website">Bezoek onze website</string>
 </resources>
