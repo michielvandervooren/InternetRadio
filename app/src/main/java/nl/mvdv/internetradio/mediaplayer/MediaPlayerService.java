@@ -15,6 +15,7 @@ import android.util.Log;
 import java.io.IOException;
 
 import nl.mvdv.internetradio.Constants;
+import nl.mvdv.internetradio.R;
 import nl.mvdv.internetradio.ui.MainActivity;
 
 import static nl.mvdv.internetradio.Util.toast;
@@ -79,7 +80,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
             Log.i(TAG, "datasource set to : " + Constants.Urls.STREAM_URL);
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
-            toast(this, "Audiospeler kan niet gestart worden");
+            toast(this, getString(R.string.err_mediaplayer));
             stopSelf();
         }
         mediaPlayer.prepareAsync();
@@ -109,9 +110,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
                 notificationIntent, 0);
 
         Notification notification = new NotificationCompat.Builder(this)
-                .setContentTitle("InternetRadio")
-                .setSmallIcon(android.R.drawable.ic_media_play)
-                .setContentText("Open de speler")
+                .setContentTitle(getString(R.string.app_name))
+                .setSmallIcon(R.drawable.ic_music_note)
+                .setContentText(getString(R.string.notification_text))
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
                 .build();
